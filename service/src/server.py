@@ -1,8 +1,6 @@
 import os
 import copy
 import logging
-import traceback
-import sys
 from multiprocessing import Process
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
@@ -71,7 +69,6 @@ async def generate(data: GenerateModel):
         return ResponseModel(result=result)
     except Exception as e:
         logging.error(e)
-        logging.info(traceback.format_exc())
         return ResponseModel(result="ERROR")
 
 
