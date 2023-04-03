@@ -20,11 +20,10 @@ class NeuralNetwork:
         checkpoint = "cointegrated/rut5-base-paraphraser"
         self.tokenizer = T5Tokenizer.from_pretrained(checkpoint)
         self.model = T5ForConditionalGeneration.from_pretrained(checkpoint)
+        self.model.eval()
         self.group_id = group_id
 
-    def generate(self, hint, do_sample=False):
-        beams = 5
-        grams = 4
+    def generate(self, hint, beams=5, grams=4, do_sample=False):
         x = self.tokenizer(hint, return_tensors='pt',
                            padding=True).to(self.model.device)
         max_size = int(x.input_ids.shape[1] * 2.0 + 10)
