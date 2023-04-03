@@ -23,8 +23,8 @@ class NeuralNetwork:
         self.group_id = group_id
 
     def generate(self, hint, do_sample=False):
-        beams = 5,
-        grams = 4,
+        beams = 5
+        grams = 4
         x = self.tokenizer(hint, return_tensors='pt',
                            padding=True).to(self.model.device)
         max_size = int(x.input_ids.shape[1] * 2.0 + 10)
