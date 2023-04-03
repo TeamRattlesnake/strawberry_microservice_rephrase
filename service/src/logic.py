@@ -19,8 +19,8 @@ class NeuralNetwork:
 
     def generate(self, hint):
         logging.info(f"Generating for hint: {hint}")
-        max_len = len(hint) * 1.5 + 10
-        grams = 8
+        max_len = int(len(hint) * 1.5 + 50)
+        grams = random.randint(5, 10)
         result = self.pipe(hint, max_length=max_len, encoder_no_repeat_ngram_size=grams, num_beams=grams+1)[0]["generated_text"]
         logging.info(f"Generated for hint: {hint}: {result}")
         return result
