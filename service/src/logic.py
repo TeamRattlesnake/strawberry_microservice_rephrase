@@ -7,7 +7,7 @@ import logging
 
 import torch
 
-from transformers import T5ForConditionalGeneration, T5Tokenizer
+from transformers import pipeline
 
 logging.basicConfig(format="%(asctime)s %(message)s", handlers=[logging.FileHandler(
     f"/home/logs/rephrase_log_model.txt", mode="w", encoding="UTF-8")], datefmt="%I:%M:%S %p", level=logging.INFO)
@@ -15,18 +15,12 @@ logging.basicConfig(format="%(asctime)s %(message)s", handlers=[logging.FileHand
 
 class NeuralNetwork:
     def __init__(self, group_id=0):
-        self.DEVICE = torch.device(
-            'cuda' if torch.cuda.is_available() else 'cpu')
-        checkpoint = "cointegrated/rut5-base-paraphraser"
-        self.tokenizer = T5Tokenizer.from_pretrained(checkpoint)
-        self.model = T5ForConditionalGeneration.from_pretrained(checkpoint)
-        self.model.eval()
-        self.group_id = group_id
+       self.pipe = pipeline(model="cointegrated/rut5-base-paraphraser")
 
-    def generate(self, hint, beams=5, grams=4, do_sample=False):
-        x = self.tokenizer(hint, return_tensors='pt',
-                           padding=True).to(self.model.device)
-        max_size = int(x.input_ids.shape[1] * 2.0 + 10)
-        out = self.model.generate(**x, encoder_no_repeat_ngram_size=grams,
-                                  num_beams=beams, max_length=max_size, do_sample=do_sample)
-        return self.tokenizer.decode(out[0], skip_special_tokens=True)
+    def generate(self, hint):
+        logging.info(f"Generating for hint: {hint}")
+        max_len = len(hint) * 1.5 + 10
+        grams = 8
+        result = self.pipe(hint, max_length=max_len, encoder_no_repeat_ngram_size=grams, num_beams=grams+1)[0]["generated_text"]
+        logging.info(f"Generated for hint: {hint}: {result}")
+        return result
